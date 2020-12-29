@@ -19,7 +19,7 @@ class SessionsController extends Controller
             'password' => 'required'
         ]);
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], isset($request->remember))) {
             session()->flash('success', '登录成功');
             return redirect()->route('users.show', Auth::user());
         } else {
