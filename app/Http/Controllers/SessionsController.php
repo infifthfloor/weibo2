@@ -27,9 +27,15 @@ class SessionsController extends Controller
         ]);
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], isset($request->remember))) {
-            session()->flash('success', '登录成功');
-            $fallback = route('users.show', Auth::user());
-            return redirect()->intended($fallback);
+            if (Auth::user()->activated) {
+                session()->flash('success', '登录成功');
+                $fallback = route('users.show', Auth::user());
+                return redirect()->intended($fallback);
+            } else {
+                Auth::logout();
+                session()->flash('warning', '你的账号未激活，请检查邮箱中的注册邮件进行激活。');
+                return redirect('/');
+            }
         } else {
             session()->flash('danger', '很抱歉，您的邮箱和密码不匹配');
             return redirect()->back()->withInput();
